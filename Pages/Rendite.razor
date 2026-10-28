@@ -1,0 +1,71 @@
+@page "/rendite"
+
+<h1>Rendite Rechner</h1>
+
+<div style="display: flex; flex-direction: column; align-items: stretch; gap: 12px; width: 100%; max-width: 350px;">
+    <label>
+        Kapital in CHF:
+        <input type="number" @bind="kapital"
+               style="display: block; width: 100%;" />
+    </label>
+
+    <label>
+        Kaufkurs in %:
+        <input type="number" @bind="kaufkurs"
+               style="display: block; width: 100%;" />
+    </label>
+
+    <label>
+        Verkaufskurs in %:
+        <input type="number" @bind="verkaufskurs"
+               style="display: block; width: 100%;" />
+    </label>
+
+    <label>
+        Marchzins in CHF:
+        <input type="number" @bind="marchzins"
+               style="display: block; width: 100%;" />
+    </label>
+
+    <button @onclick="Berechnen">Berechnen</button>
+</div>
+
+<p>@ergebnis</p>
+
+@code {
+    double kapital;
+    double kaufkurs;
+    double verkaufskurs;
+    double marchzins;
+string ergebnis = "";
+
+void Berechnen()
+{
+    if (kapital <= 0)
+    {
+        ergebnis = "Das Kapital muss grösser als 0 sein.";
+    }
+    else if (kaufkurs <= 0 || verkaufskurs <= 0)
+    {
+        ergebnis = "Bitte gültige Kurse eingeben.";
+    }
+    else
+    {
+        double kaufwert = kapital * kaufkurs / 100;
+        double verkaufswert = kapital * verkaufskurs / 100;
+
+        double kursgewinn = verkaufswert - kaufwert;
+
+        double gesamtertrag = kursgewinn + marchzins;
+
+        double rendite = gesamtertrag / kaufwert * 100;
+
+        ergebnis = "Kursgewinn/-verlust: "
+            + Math.Round(kursgewinn, 2) + " CHF"
+            + " | Gesamtertrag: "
+            + Math.Round(gesamtertrag, 2) + " CHF"
+            + " | Rendite: "
+            + Math.Round(rendite, 2) + " %";
+    }
+}
+}

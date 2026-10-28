@@ -1,0 +1,64 @@
+
+@page "/marchzins"
+
+
+<h1>Marchzins Rechner</h1>
+
+<label>Kaufdatum:</label>
+<input type="date" @bind="kaufdatum" />
+<br />
+
+<label>Verkaufsdatum:</label>
+<input type="date" @bind="verkaufsdatum" />
+<br />
+
+<label>Kapital:</label>
+<input type="number" @bind="kapital" />
+<br />
+
+<label>Zinssatz in %:</label>
+<input type="number" @bind="zinssatz" />
+<br />
+<br />
+
+<button @onclick="Berechnen">Berechnen</button>
+
+<p>@ergebnis</p>
+
+
+@code {
+    DateTime kaufdatum;
+    DateTime verkaufsdatum;
+
+    double kapital;
+    double zinssatz;
+
+    string ergebnis = "";
+
+    void Berechnen()
+    {
+        if (kaufdatum >= verkaufsdatum)
+        {
+            ergebnis = "Das Verkaufsdatum muss nach dem Kaufdatum sein.";
+        }
+        else if (kapital <= 0)
+        {
+            ergebnis = "Das Kapital muss grösser als 0 sein.";
+        }
+        else if (zinssatz < 0)
+        {
+            ergebnis = "Der Zinssatz darf nicht negativ sein.";
+        }
+        else
+        {
+            int tage = (verkaufsdatum - kaufdatum).Days;
+
+            double zins = zinssatz / 100;
+
+            double marchzins = kapital * zins * tage / 360;
+
+            ergebnis = "Marchzins: " + Math.Round(marchzins, 2) + " CHF";
+        }
+    }
+}
+
