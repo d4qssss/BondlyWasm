@@ -1,0 +1,193 @@
+.bondly-home {
+    color: #201735;
+    font-family: "Inter", system-ui, sans-serif;
+    max-width: 76rem;
+    margin: 0 auto;
+    padding-bottom: 2rem;
+}
+
+.hero {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    align-items: center;
+    padding: clamp(1.5rem, 5vw, 5rem);
+    border-radius: 1.75rem;
+    background: radial-gradient(ellipse at top right, #503178, transparent 65%), #211437;
+    color: #fff;
+}
+
+.hero h1 {
+    margin: 0;
+    font-size: clamp(2.6rem, 6vw, 6rem);
+    font-weight: 850;
+    letter-spacing: -.07em;
+    line-height: 1;
+}
+
+.hero-copy p {
+    max-width: 22ch;
+    margin: 1.25rem 0 1.75rem;
+    color: #eee4ff;
+    font-size: clamp(1.1rem, 2vw, 1.45rem);
+}
+
+.hero-button {
+    display: inline-flex;
+    align-items: center;
+    gap: .65rem;
+    border-radius: .75rem;
+    padding: .8rem 1rem;
+    background: #dbfb94;
+    color: #22183b;
+    font-weight: 750;
+    text-decoration: none;
+}
+
+.hero-button:hover {
+    background: #ecffbf;
+    color: #22183b;
+}
+
+.example {
+    min-width: 0;
+    padding: clamp(1rem, 2.5vw, 2rem);
+    border: 1px solid #a68cc285;
+    border-radius: 1.25rem;
+    background: #34224e;
+}
+
+.example-caption, .example-details dt {
+    color: #e0d2f2;
+    font-size: .9rem;
+}
+
+.example h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.example-amount {
+    color: #dbfb94;
+    font-size: clamp(2.2rem, 4.2vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -.05em;
+}
+
+.example-amount span {
+    font-size: .4em;
+    letter-spacing: 0;
+}
+
+.example-days {
+    display: block;
+    margin-top: 1rem;
+}
+
+.example input[type="range"] {
+    display: block;
+    width: 100%;
+    min-height: 2rem;
+    margin: .25rem 0 1rem;
+    accent-color: #dbfb94;
+}
+
+.example-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem 2rem;
+    margin: 0;
+}
+
+.example-details dd {
+    margin: 0;
+    font-weight: 750;
+}
+
+.calculators {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.calculator {
+    display: flex;
+    align-items: flex-start;
+    gap: .85rem;
+    padding: clamp(1rem, 2vw, 1.6rem);
+    border: 1px solid #ded6eb;
+    border-radius: 1.25rem;
+    color: inherit;
+    background: #faf7ff;
+    text-decoration: none;
+    transition: background-color .15s, border-color .15s;
+}
+
+.calculator:hover {
+    color: inherit;
+    background: #f0e7fc;
+    border-color: #9b80bc;
+}
+
+.calculator-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 2.4rem;
+    height: 2.4rem;
+    border-radius: .7rem;
+    background: #eaddfa;
+    color: #46296c;
+    font-weight: 800;
+}
+
+.calculator-copy {
+    flex: 1;
+    min-width: 0;
+}
+
+.calculator-copy strong, .calculator-copy span {
+    display: block;
+}
+
+.calculator-copy strong {
+    font-size: 1.25rem;
+    margin-bottom: .25rem;
+}
+
+.calculator-copy span {
+    color: #554962;
+}
+
+.arrow {
+    color: #61398b;
+}
+
+.hero-button:focus-visible, .calculator:focus-visible {
+    outline: 3px solid #7c4eb0;
+    outline-offset: 4px;
+}
+
+@media (max-width: 1050px) {
+    .hero {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 840px) {
+    .calculators {
+        grid-template-columns: 1fr;
+    }
+}
+
+.project-credits {
+    margin-top: 1.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ded6eb;
+    color: #554962;
+}
+
+.project-credits p {
+    margin: 0 0 .3rem;
+}

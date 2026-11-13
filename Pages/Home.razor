@@ -1,7 +1,52 @@
-﻿@page "/"
+@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>BONDLY – Marchzins und Rendite</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="bondly-home" lang="de-CH">
+    <section class="hero" aria-labelledby="bondly-title">
+        <div class="hero-copy">
+            <h1 id="bondly-title">BONDLY</h1>
+            <p>Wie viel Zins ist seit dem Kauf aufgelaufen? Und was bleibt beim Verkauf übrig?</p>
+            <a class="hero-button" href="marchzins">Zum Marchzins-Rechner</a>
+        </div>
 
-Welcome to your new app.
+        <div class="example">
+            <h2>Was bringen 30 Tage?</h2>
+            <p class="example-caption">Verschiebe den Regler und schau, wie der Marchzins steigt.</p>
+            <output class="example-amount" for="example-days">@((tage / 10m).ToString("0.00", System.Globalization.CultureInfo.GetCultureInfo("de-CH"))) <span>CHF</span></output>
+            <label class="example-days" for="example-days">Tage: <strong>@tage</strong></label>
+            <input id="example-days" type="range" min="0" max="90" @bind="tage" @bind:event="oninput" />
+            <dl class="example-details">
+                <div><dt>Kapital</dt><dd>1’000 CHF</dd></div>
+                <div><dt>Zinssatz</dt><dd>3,6 %</dd></div>
+            </dl>
+        </div>
+    </section>
+
+    <div class="calculators">
+        <a class="calculator" href="marchzins">
+            <span class="calculator-icon" aria-hidden="true">＋</span>
+            <span class="calculator-copy">
+                <strong>Marchzins</strong>
+                <span>Zinsen für die Tage zwischen Kauf und Verkauf berechnen.</span>
+            </span>
+            <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="calculator" href="rendite">
+            <span class="calculator-icon" aria-hidden="true">%</span>
+            <span class="calculator-copy">
+                <strong>Rendite</strong>
+                <span>Kauf- und Verkaufskurs vergleichen und die Rendite in Prozent sehen.</span>
+            </span>
+            <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+    </div>
+
+    <footer class="project-credits">
+        <p>Ein Schulprojekt von Dasha Yakovchuk, Emma Parietti und Angelina Bayeh</p>
+    </footer>
+</div>
+
+@code {
+    int tage = 30;
+}
