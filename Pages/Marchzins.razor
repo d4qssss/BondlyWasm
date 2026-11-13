@@ -7,14 +7,14 @@
 <div @key="formularVersion" class="d-flex flex-column gap-2" style="max-width: 350px;">
     <label>
         Kaufdatum
-        <input class="form-control" type="text" placeholder="DD.MM.YYYY" maxlength="10" @bind="kaufdatumText"
-               @bind:event="oninput" @bind:after="Berechnen" />
+        <input class="form-control" type="text" placeholder="DD.MM.YYYY" @bind:get="kaufdatumText" @bind:set="text => DatumEingeben(ref kaufdatumText, text)"
+               @bind:event="oninput" />
     </label>
 
     <label>
         Verkaufsdatum
-        <input class="form-control" type="text" placeholder="DD.MM.YYYY" maxlength="10" @bind="verkaufsdatumText"
-               @bind:event="oninput" @bind:after="Berechnen" />
+        <input class="form-control" type="text" placeholder="DD.MM.YYYY" @bind:get="verkaufsdatumText" @bind:set="text => DatumEingeben(ref verkaufsdatumText, text)"
+               @bind:event="oninput" />
     </label>
 
     <label>
@@ -66,6 +66,48 @@ else
         verkaufsdatumText = "";
         kapital = null;
         zinssatz = null;
+        Berechnen();
+    }
+
+    void DatumEingeben(ref string datumText, string? eingabe)
+    {
+        var datum = new System.Text.StringBuilder();
+        int abschnitt = 0;
+        int ziffern = 0;
+
+        foreach (char zeichen in eingabe ?? string.Empty)
+        {
+            if (zeichen == '.' && abschnitt < 2 && ziffern > 0)
+            {
+                if (ziffern == 1)
+                {
+                    datum.Insert(datum.Length - 1, '0');
+                }
+
+                datum.Append('.');
+                abschnitt++;
+                ziffern = 0;
+            }
+            else if (char.IsAsciiDigit(zeichen))
+            {
+                if (abschnitt < 2 && ziffern == 2)
+                {
+                    datum.Append('.');
+                    abschnitt++;
+                    ziffern = 0;
+                }
+
+                if (abschnitt == 2 && ziffern == 4)
+                {
+                    break;
+                }
+
+                datum.Append(zeichen);
+                ziffern++;
+            }
+        }
+
+        datumText = datum.ToString();
         Berechnen();
     }
 
