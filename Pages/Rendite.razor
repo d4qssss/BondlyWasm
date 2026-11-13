@@ -2,70 +2,126 @@
 
 <h1>Rendite Rechner</h1>
 
-<div style="display: flex; flex-direction: column; align-items: stretch; gap: 12px; width: 100%; max-width: 350px;">
+<div @key="formularVersion" style="display: flex; flex-direction: column; align-items: stretch; gap: 12px; width: 100%; max-width: 350px;">
     <label>
         Kapital in CHF:
-        <input type="number" @bind="kapital"
+        <input type="number" step="any" @bind="kapital"
+               @bind:event="oninput" @bind:after="Berechnen"
                style="display: block; width: 100%;" />
     </label>
 
     <label>
         Kaufkurs in %:
-        <input type="number" @bind="kaufkurs"
+        <input type="number" step="any" @bind="kaufkurs"
+               @bind:event="oninput" @bind:after="Berechnen"
                style="display: block; width: 100%;" />
     </label>
 
     <label>
         Verkaufskurs in %:
-        <input type="number" @bind="verkaufskurs"
+        <input type="number" step="any" @bind="verkaufskurs"
+               @bind:event="oninput" @bind:after="Berechnen"
                style="display: block; width: 100%;" />
     </label>
 
     <label>
         Marchzins in CHF:
-        <input type="number" @bind="marchzins"
+        <input type="number" step="any" @bind="marchzins"
+               @bind:event="oninput" @bind:after="Berechnen"
                style="display: block; width: 100%;" />
     </label>
-
-    <button @onclick="Berechnen">Berechnen</button>
 </div>
 
-<p>@ergebnis</p>
+<details class="my-3">
+    <summary aria-label="Wie wurde die Rendite berechnet?" title="Wie wurde das berechnet?">ⓘ</summary>
+    <p>Kaufwert = Kapital × (Kaufkurs ÷ 100). Verkaufswert = Kapital × (Verkaufskurs ÷ 100).</p>
+    <p>Kursgewinn = Verkaufswert − Kaufwert. Gesamtertrag = Kursgewinn + Marchzins.</p>
+    <p>Rendite in Prozent = (Gesamtertrag ÷ Kaufwert) × 100.</p>
+</details>
+
+<p role="status">@ergebnis</p>
+
+<button type="button" class="btn btn-outline-secondary" @onclick="Zuruecksetzen">Zurücksetzen</button>
+@if (exportText is not null)
+{
+    <a class="btn btn-primary" href="@("data:text/plain;charset=utf-8," + Uri.EscapeDataString(exportText))"
+       download="rendite.txt">Exportieren</a>
+}
+else
+{
+    <button type="button" class="btn btn-primary" disabled>Exportieren</button>
+}
 
 @code {
-    double kapital;
-    double kaufkurs;
-    double verkaufskurs;
-    double marchzins;
-string ergebnis = "";
+    double? kapital;
+    double? kaufkurs;
+    double? verkaufskurs;
+    double? marchzins;
 
-void Berechnen()
-{
-    if (kapital <= 0)
+    int formularVersion;
+    string ergebnis = "";
+    string? exportText;
+
+    void Zuruecksetzen()
     {
-        ergebnis = "Das Kapital muss grösser als 0 sein.";
+        formularVersion++;
+        kapital = null;
+        kaufkurs = null;
+        verkaufskurs = null;
+        marchzins = null;
+        Berechnen();
     }
-    else if (kaufkurs <= 0 || verkaufskurs <= 0)
+
+    void Berechnen()
     {
-        ergebnis = "Bitte gültige Kurse eingeben.";
+        ergebnis = "";
+        exportText = null;
+
+        if (kapital is null || kaufkurs is null || verkaufskurs is null || marchzins is null)
+        {
+            return;
+        }
+
+        if (kapital <= 0)
+        {
+            ergebnis = "Das Kapital muss grösser als 0 sein.";
+        }
+        else if (kaufkurs <= 0 || verkaufskurs <= 0)
+        {
+            ergebnis = "Bitte gültige Kurse eingeben.";
+        }
+        else
+        {
+            double kaufwert = kapital.Value * kaufkurs.Value / 100;
+            double verkaufswert = kapital.Value * verkaufskurs.Value / 100;
+
+            double kursgewinn = verkaufswert - kaufwert;
+
+            double gesamtertrag = kursgewinn + marchzins.Value;
+
+            double rendite = gesamtertrag / kaufwert * 100;
+
+            if (!double.IsFinite(kursgewinn) || !double.IsFinite(gesamtertrag) || !double.IsFinite(rendite))
+            {
+                ergebnis = "Das Ergebnis liegt ausserhalb des berechenbaren Bereichs.";
+                return;
+            }
+
+            ergebnis = "Kursgewinn/-verlust: "
+                + Math.Round(kursgewinn, 2) + " CHF"
+                + " | Gesamtertrag: "
+                + Math.Round(gesamtertrag, 2) + " CHF"
+                + " | Rendite: "
+                + Math.Round(rendite, 2) + " %";
+            exportText = $"""
+                BONDLY – Rendite Rechner
+                Kapital: {kapital} CHF
+                Kaufkurs: {kaufkurs} %
+                Verkaufskurs: {verkaufskurs} %
+                Marchzins: {marchzins} CHF
+
+                {ergebnis}
+                """;
+        }
     }
-    else
-    {
-        double kaufwert = kapital * kaufkurs / 100;
-        double verkaufswert = kapital * verkaufskurs / 100;
-
-        double kursgewinn = verkaufswert - kaufwert;
-
-        double gesamtertrag = kursgewinn + marchzins;
-
-        double rendite = gesamtertrag / kaufwert * 100;
-
-        ergebnis = "Kursgewinn/-verlust: "
-            + Math.Round(kursgewinn, 2) + " CHF"
-            + " | Gesamtertrag: "
-            + Math.Round(gesamtertrag, 2) + " CHF"
-            + " | Rendite: "
-            + Math.Round(rendite, 2) + " %";
-    }
-}
 }

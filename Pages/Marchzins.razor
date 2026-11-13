@@ -4,39 +4,99 @@
 
 <h1>Marchzins Rechner</h1>
 
-<label>Kaufdatum:</label>
-<input type="date" @bind="kaufdatum" />
-<br />
+<div @key="formularVersion" class="d-flex flex-column gap-2" style="max-width: 350px;">
+    <label>
+        Kaufdatum
+        <input class="form-control" type="text" placeholder="DD.MM.YYYY" maxlength="10" @bind="kaufdatumText"
+               @bind:event="oninput" @bind:after="Berechnen" />
+    </label>
 
-<label>Verkaufsdatum:</label>
-<input type="date" @bind="verkaufsdatum" />
-<br />
+    <label>
+        Verkaufsdatum
+        <input class="form-control" type="text" placeholder="DD.MM.YYYY" maxlength="10" @bind="verkaufsdatumText"
+               @bind:event="oninput" @bind:after="Berechnen" />
+    </label>
 
-<label>Kapital:</label>
-<input type="number" @bind="kapital" />
-<br />
+    <label>
+        Kapital in CHF
+        <input class="form-control" type="number" step="any" @bind="kapital"
+               @bind:event="oninput" @bind:after="Berechnen" />
+    </label>
 
-<label>Zinssatz in %:</label>
-<input type="number" @bind="zinssatz" />
-<br />
-<br />
+    <label>
+        Zinssatz in %
+        <input class="form-control" type="number" step="any" @bind="zinssatz"
+               @bind:event="oninput" @bind:after="Berechnen" />
+    </label>
+</div>
 
-<button @onclick="Berechnen">Berechnen</button>
+<details class="my-3">
+    <summary aria-label="Wie wurde der Marchzins berechnet?" title="Wie wurde das berechnet?">ⓘ</summary>
+    <p>Marchzins = Kapital × (Zinssatz ÷ 100) × Tage ÷ 360.</p>
+    <p>Die Tage ergeben sich aus der Differenz zwischen Verkaufsdatum und Kaufdatum.</p>
+</details>
 
-<p>@ergebnis</p>
+<p role="status">@ergebnis</p>
 
+<button type="button" class="btn btn-outline-secondary" @onclick="Zuruecksetzen">Zurücksetzen</button>
+@if (exportText is not null)
+{
+    <a class="btn btn-primary" href="@("data:text/plain;charset=utf-8," + Uri.EscapeDataString(exportText))"
+       download="marchzins.txt">Exportieren</a>
+}
+else
+{
+    <button type="button" class="btn btn-primary" disabled>Exportieren</button>
+}
 
 @code {
-    DateTime kaufdatum;
-    DateTime verkaufsdatum;
+    string kaufdatumText = "";
+    string verkaufsdatumText = "";
+    double? kapital;
+    double? zinssatz;
 
-    double kapital;
-    double zinssatz;
-
+    int formularVersion;
     string ergebnis = "";
+    string? exportText;
+
+    void Zuruecksetzen()
+    {
+        formularVersion++;
+        kaufdatumText = "";
+        verkaufsdatumText = "";
+        kapital = null;
+        zinssatz = null;
+        Berechnen();
+    }
+
+    bool DatumLesen(string text, out DateTime datum)
+    {
+        return DateTime.TryParseExact(text, "dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None, out datum);
+    }
 
     void Berechnen()
     {
+        ergebnis = "";
+        exportText = null;
+
+        if (kaufdatumText.Length < 10 || verkaufsdatumText.Length < 10)
+        {
+            return;
+        }
+
+        if (!DatumLesen(kaufdatumText, out DateTime kaufdatum)
+            || !DatumLesen(verkaufsdatumText, out DateTime verkaufsdatum))
+        {
+            ergebnis = "Bitte gültige Daten im Format DD.MM.YYYY eingeben.";
+            return;
+        }
+
+        if (kapital is null || zinssatz is null)
+        {
+            return;
+        }
+
         if (kaufdatum >= verkaufsdatum)
         {
             ergebnis = "Das Verkaufsdatum muss nach dem Kaufdatum sein.";
@@ -53,11 +113,27 @@
         {
             int tage = (verkaufsdatum - kaufdatum).Days;
 
-            double zins = zinssatz / 100;
+            double zins = zinssatz.Value / 100;
 
-            double marchzins = kapital * zins * tage / 360;
+            double marchzins = kapital.Value * zins * tage / 360;
+
+            if (!double.IsFinite(marchzins))
+            {
+                ergebnis = "Das Ergebnis liegt ausserhalb des berechenbaren Bereichs.";
+                return;
+            }
 
             ergebnis = "Marchzins: " + Math.Round(marchzins, 2) + " CHF";
+            exportText = $"""
+                BONDLY – Marchzins Rechner
+                Kaufdatum: {kaufdatum:dd.MM.yyyy}
+                Verkaufsdatum: {verkaufsdatum:dd.MM.yyyy}
+                Kapital: {kapital} CHF
+                Zinssatz: {zinssatz} %
+                Tage: {tage}
+
+                {ergebnis}
+                """;
         }
     }
 }
