@@ -13,20 +13,26 @@
 
     <label>
         Verkaufsdatum
-        <input class="form-control" type="text" placeholder="DD.MM.YYYY" @bind:get="verkaufsdatumText" @bind:set="text => DatumEingeben(ref verkaufsdatumText, text)"
-               @bind:event="oninput" />
+        <input class="form-control" type="text" placeholder="DD.MM.YYYY" 
+                @bind:get="verkaufsdatumText"
+                @bind:set="text => DatumEingeben(ref verkaufsdatumText, text)"
+                @bind:event="oninput" />
     </label>
 
     <label>
         Kapital in CHF
-        <input class="form-control" type="number" step="any" @bind="kapital"
-               @bind:event="oninput" @bind:after="Berechnen" />
+        <input class="form-control" type="number" step="any" 
+                @bind="kapital"
+                @bind:event="oninput" 
+                @bind:after="Berechnen" />
     </label>
 
     <label>
         Zinssatz in %
-        <input class="form-control" type="number" step="any" @bind="zinssatz"
-               @bind:event="oninput" @bind:after="Berechnen" />
+        <input class="form-control" type="number" step="any" 
+                @bind="zinssatz"
+                @bind:event="oninput"
+                @bind:after="Berechnen" />
     </label>
 </div>
 
